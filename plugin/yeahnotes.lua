@@ -44,3 +44,15 @@ end, { desc = "YeahNotes: Migrate incomplete tasks to tomorrow" })
 vim.api.nvim_create_user_command("YNMigrateAndOpen", function()
 	yeahnotes.commands.migrate_and_open()
 end, { desc = "YeahNotes: Migrate tasks and open tomorrow's journal" })
+
+vim.api.nvim_create_user_command("YNGlobalTasks", function()
+	yeahnotes.commands.show_global_tasks()
+end, { desc = "YeahNotes: Show all incomplete tasks globally" })
+
+vim.api.nvim_create_user_command("YNTaskSidebar", function()
+	yeahnotes.commands.show_task_sidebar()
+end, { desc = "YeahNotes: Show task sidebar for current file" })
+
+vim.api.nvim_create_user_command("YNToggleTaskSidebar", function()
+	yeahnotes.commands.toggle_task_sidebar()
+end, { desc = "YeahNotes: Toggle task sidebar for current file" })

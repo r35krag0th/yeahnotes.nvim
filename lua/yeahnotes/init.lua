@@ -1,6 +1,7 @@
 local config = require("yeahnotes.config")
 local commands = require("yeahnotes.commands")
 local pickers = require("yeahnotes.pickers")
+local summary = require("yeahnotes.summary")
 
 local M = {}
 
@@ -50,7 +51,24 @@ function M.setup(opts)
 		if km.migrate_and_open then
 			keymap("n", km.migrate_and_open, commands.migrate_and_open, { desc = "YeahNotes: Migrate and open tomorrow" })
 		end
+		if km.global_tasks then
+			keymap("n", km.global_tasks, commands.show_global_tasks, { desc = "YeahNotes: Show all incomplete tasks" })
+		end
+		if km.toggle_task_sidebar then
+			keymap("n", km.toggle_task_sidebar, commands.toggle_task_sidebar, { desc = "YeahNotes: Toggle task sidebar" })
+		end
 	end
+
+	-- Set up autocommands for sidebar auto-update
+	local augroup = vim.api.nvim_create_augroup("YeahNotesSidebar", { clear = true })
+	vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
+		group = augroup,
+		pattern = "*.md",
+		callback = function()
+			summary.update_sidebar_if_visible()
+		end,
+		desc = "Update YeahNotes sidebar when markdown changes",
+	})
 end
 
 -- Export commands and pickers for use in user commands

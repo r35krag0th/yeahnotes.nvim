@@ -6,6 +6,7 @@ A lightweight, work-friendly Neovim journal plugin with intelligent weekday navi
 
 - **Weekday-Aware Navigation**: Automatically skips weekends when navigating between journal entries
 - **BuJo Task Migration**: Migrate incomplete tasks to tomorrow's journal (Bullet Journal style)
+- **Task Summary Views**: View incomplete tasks globally across all notes or locally in a sidebar
 - **Customizable Templates**: Auto-populate new journal entries with your preferred structure
 - **Date-Based Organization**: Clean hierarchical structure (`journal/YYYY/MM/DD.md`)
 - **Fast File Finding**: Integrated with [mini.pick](https://github.com/echasnovski/mini.pick) for fuzzy finding and live grep
@@ -37,6 +38,8 @@ A lightweight, work-friendly Neovim journal plugin with intelligent weekday navi
     { "<localleader>ng", desc = "YeahNotes: Grep notes" },
     { "<localleader>nm", desc = "YeahNotes: Migrate tasks to tomorrow" },
     { "<localleader>nM", desc = "YeahNotes: Migrate and open tomorrow" },
+    { "<localleader>nT", desc = "YeahNotes: Show all incomplete tasks" },
+    { "<localleader>ns", desc = "YeahNotes: Toggle task sidebar" },
   },
 }
 ```
@@ -60,6 +63,8 @@ require("yeahnotes").setup({
     grep = "<localleader>ng",
     migrate = "<localleader>nm",
     migrate_and_open = "<localleader>nM",
+    global_tasks = "<localleader>nT",
+    toggle_task_sidebar = "<localleader>ns",
   },
 })
 ```
@@ -191,6 +196,9 @@ The plugin provides the following user commands:
 | `:YNGrep`              | Live grep through all notes                           |
 | `:YNMigrate`           | Migrate incomplete tasks to tomorrow (marks as `[>]`) |
 | `:YNMigrateAndOpen`    | Migrate tasks and open tomorrow's journal             |
+| `:YNGlobalTasks`       | Show all incomplete tasks across all notes            |
+| `:YNTaskSidebar`       | Show task sidebar for current file                    |
+| `:YNToggleTaskSidebar` | Toggle task sidebar for current file                  |
 
 ### Default Keymaps
 
@@ -206,9 +214,11 @@ All keymaps use `<localleader>` by default (typically `\` or `,`):
 | `<localleader>nn` | Next day                  |
 | `<localleader>nN` | Next (skip empty)         |
 | `<localleader>nf` | Find files                |
-| `<localleader>ng` | Grep notes                |
-| `<localleader>nm` | Migrate tasks to tomorrow |
-| `<localleader>nM` | Migrate and open tomorrow |
+| `<localleader>ng` | Grep notes                  |
+| `<localleader>nm` | Migrate tasks to tomorrow   |
+| `<localleader>nM` | Migrate and open tomorrow   |
+| `<localleader>nT` | Show all incomplete tasks   |
+| `<localleader>ns` | Toggle task sidebar         |
 
 ## Journal Structure
 
@@ -331,6 +341,63 @@ Some meeting notes...
 
 - `:YNMigrate` / `<localleader>nm` - Migrate tasks and stay in current file
 - `:YNMigrateAndOpen` / `<localleader>nM` - Migrate tasks and open tomorrow's journal
+
+## Task Summary Views
+
+yeahnotes.nvim provides two powerful ways to view and manage your tasks: global search across all notes and a local sidebar for the current file.
+
+### Global Task Summary
+
+Use `:YNGlobalTasks` (or `<localleader>nT`) to search for all incomplete tasks across your entire notes directory.
+
+**Features:**
+- Searches all `.md` files in your notes directory
+- Shows only incomplete tasks (`- [ ]`)
+- Displays results in a picker with file paths and line numbers
+- Press Enter to jump directly to the task in its file
+- Results are automatically centered in the window
+
+**Example:**
+
+```
+notes/journal/2025/10/20.md:15: Review Q4 planning docs
+notes/journal/2025/10/21.md:23: Schedule team 1:1s
+notes/projects/website-redesign.md:42: Update mockups
+```
+
+### Local Task Sidebar
+
+Use `:YNToggleTaskSidebar` (or `<localleader>ns`) to open a sidebar showing all tasks in the current file.
+
+**Features:**
+- Shows tasks organized into two sections:
+  - **Incomplete Tasks**: All unchecked tasks (`- [ ]`)
+  - **Completed Tasks**: All checked tasks (`- [x]`, `- [X]`)
+- Updates automatically as you edit the file
+- Press Enter on any task to jump to that line in the source file
+- Press `q` to close the sidebar
+- Toggle on/off with the same command
+
+**Example sidebar:**
+
+```markdown
+# Task Summary
+
+## Incomplete Tasks (3)
+
+L15: [ ] Review pull requests
+L23: [ ] Update documentation
+L42: [ ] Fix bug #123
+
+## Completed Tasks (2)
+
+L12: [x] Team standup
+L18: [x] Code review for PR #456
+```
+
+The sidebar automatically updates whenever you modify tasks in your note, making it easy to track your progress throughout the day.
+
+**Workflow Tip:** Keep the sidebar open while working through your daily tasks. As you check off items, the sidebar updates in real-time, moving completed tasks to the bottom section.
 
 ## Recommended Companions
 

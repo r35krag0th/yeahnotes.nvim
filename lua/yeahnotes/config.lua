@@ -18,6 +18,8 @@ M.defaults = {
 		grep = "<localleader>ng",
 		migrate = "<localleader>nm",
 		migrate_and_open = "<localleader>nM",
+		global_tasks = "<localleader>nT",
+		toggle_task_sidebar = "<localleader>ns",
 	},
 	-- Template can be a function that receives date info, a string, or false to disable
 	template = function(date_info)
