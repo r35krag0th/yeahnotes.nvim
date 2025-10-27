@@ -2,6 +2,7 @@ local config = require("yeahnotes.config")
 local commands = require("yeahnotes.commands")
 local pickers = require("yeahnotes.pickers")
 local summary = require("yeahnotes.summary")
+local highlights = require("yeahnotes.highlights")
 
 local M = {}
 
@@ -12,6 +13,9 @@ function M.setup(opts)
 
 	-- Create the root notes directory if it doesn't exist
 	vim.fn.mkdir(config.options.root, "p")
+
+	-- Set up highlights for date tags
+	highlights.setup()
 
 	-- Set up keymaps if they're configured
 	if config.options.keymap then

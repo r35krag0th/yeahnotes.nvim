@@ -7,6 +7,7 @@ A lightweight, work-friendly Neovim journal plugin with intelligent weekday navi
 - **Weekday-Aware Navigation**: Automatically skips weekends when navigating between journal entries
 - **BuJo Task Migration**: Migrate incomplete tasks to tomorrow's journal (Bullet Journal style)
 - **Task Summary Views**: View incomplete tasks globally across all notes or locally in a sidebar
+- **Date Tags & Due Dates**: Visual highlighting for dates with stoplight colors for due date status
 - **Customizable Templates**: Auto-populate new journal entries with your preferred structure
 - **Date-Based Organization**: Clean hierarchical structure (`journal/YYYY/MM/DD.md`)
 - **Fast File Finding**: Integrated with [mini.pick](https://github.com/echasnovski/mini.pick) for fuzzy finding and live grep
@@ -405,6 +406,68 @@ Line numbers appear as subtle virtual text on the right, keeping the focus on yo
 The sidebar automatically updates whenever you modify tasks in your note, making it easy to track your progress throughout the day.
 
 **Workflow Tip:** Keep the sidebar open while working through your daily tasks. As you check off items, the sidebar updates in real-time, moving completed tasks to the bottom section.
+
+## Date Tags & Due Dates
+
+yeahnotes.nvim provides visual highlighting for dates using the `@MM/DD/YYYY` format, with special handling for task due dates.
+
+### Date Tag Format
+
+Use `@MM/DD/YYYY` anywhere in your notes to create a highlighted date tag:
+
+```markdown
+Meeting scheduled for @11/10/2025 to discuss Q4 results.
+```
+
+Date tags are displayed with a calendar icon (📆) and pill-style highlighting in blue.
+
+### Due Dates on Tasks
+
+When a date tag appears at the start of a task (before the task text), it becomes a **due date** with status-aware highlighting:
+
+```markdown
+- [ ] @11/10/2025 It's my birthday!
+- [ ] @10/15/2025 Submit quarterly report
+- [x] @10/01/2025 Complete code review
+```
+
+### Due Date Status Colors (Stoplight System)
+
+Due dates are automatically color-coded based on their status:
+
+| Status | Color | Icon | Description |
+|--------|-------|------|-------------|
+| **Overdue** | 🔴 Red | ⚠ | Date is in the past |
+| **Today** | 🟡 Yellow | 📅 | Date is today |
+| **Upcoming** | 🟢 Green | 📌 | Date is in the future |
+
+**Example:**
+
+```markdown
+## Today's Tasks
+
+- [ ] ⚠ @10/20/2025 Overdue task - needs attention!
+- [ ] 📅 @10/27/2025 Task due today
+- [ ] 📌 @11/15/2025 Upcoming task - plenty of time
+```
+
+The highlighting updates automatically as you type and as dates change (e.g., an upcoming task becomes "today" when the date arrives).
+
+### Regular Date Tags vs Due Dates
+
+**Due Date (on a task):**
+```markdown
+- [ ] @11/10/2025 Complete project documentation
+      ↑ Must be at the start of the task text
+```
+
+**Regular Date Tag (anywhere else):**
+```markdown
+The meeting on @11/10/2025 went well.
+I was born on @11/10/2025 - just a reference date.
+```
+
+Regular date tags use a calendar icon and blue highlighting, while due dates use status-specific icons and stoplight colors.
 
 ## Recommended Companions
 
