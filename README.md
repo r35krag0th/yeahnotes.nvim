@@ -385,15 +385,17 @@ Use `:YNToggleTaskSidebar` (or `<localleader>ns`) to open a sidebar showing all 
 
 ## Incomplete Tasks (3)
 
-L15: [ ] Review pull requests
-L23: [ ] Update documentation
-L42: [ ] Fix bug #123
+[ ] Review pull requests                                                     L15
+[ ] Update documentation                                                     L23
+[ ] Fix bug #123                                                             L42
 
 ## Completed Tasks (2)
 
-L12: [x] Team standup
-L18: [x] Code review for PR #456
+[x] Team standup                                                             L12
+[x] Code review for PR #456                                                  L18
 ```
+
+Line numbers appear as subtle virtual text on the right, keeping the focus on your tasks while maintaining easy navigation.
 
 The sidebar automatically updates whenever you modify tasks in your note, making it easy to track your progress throughout the day.
 

@@ -143,6 +143,7 @@ end
 ---@param complete_tasks table List of complete tasks
 local function render_sidebar(bufnr, incomplete_tasks, complete_tasks)
   local lines = {}
+  local task_line_map = {} -- Map sidebar line number to source line number
 
   -- Header
   table.insert(lines, '# Task Summary')
@@ -154,11 +155,12 @@ local function render_sidebar(bufnr, incomplete_tasks, complete_tasks)
 
   if #incomplete_tasks > 0 then
     for _, task in ipairs(incomplete_tasks) do
-      table.insert(lines, string.format('L%d: %s %s',
-        task.line_num,
+      local line_idx = #lines + 1
+      table.insert(lines, string.format('%s %s',
         task.checkbox,
         task.text
       ))
+      task_line_map[line_idx] = task.line_num
     end
   else
     table.insert(lines, '(none)')
@@ -170,11 +172,12 @@ local function render_sidebar(bufnr, incomplete_tasks, complete_tasks)
 
   if #complete_tasks > 0 then
     for _, task in ipairs(complete_tasks) do
-      table.insert(lines, string.format('L%d: %s %s',
-        task.line_num,
+      local line_idx = #lines + 1
+      table.insert(lines, string.format('%s %s',
         task.checkbox,
         task.text
       ))
+      task_line_map[line_idx] = task.line_num
     end
   else
     table.insert(lines, '(none)')
@@ -186,31 +189,53 @@ local function render_sidebar(bufnr, incomplete_tasks, complete_tasks)
   -- Set lines
   vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
 
+  -- Clear existing virtual text
+  local ns_id = vim.api.nvim_create_namespace('yeahnotes_sidebar')
+  vim.api.nvim_buf_clear_namespace(bufnr, ns_id, 0, -1)
+
+  -- Add virtual text for line numbers
+  for sidebar_line, source_line in pairs(task_line_map) do
+    vim.api.nvim_buf_set_extmark(bufnr, ns_id, sidebar_line - 1, 0, {
+      virt_text = { { 'L' .. source_line, 'Comment' } },
+      virt_text_pos = 'right_align',
+    })
+  end
+
+  -- Store the mapping for jump functionality
+  vim.b[bufnr].yeahnotes_task_line_map = task_line_map
+
   -- Make buffer read-only
   vim.api.nvim_set_option_value('modifiable', false, { buf = bufnr })
 end
 
 ---Jump to task in source buffer from sidebar
 ---@param source_bufnr integer Source buffer number
-local function jump_to_task_from_sidebar()
-  local line = vim.api.nvim_get_current_line()
-  local line_num = line:match('^L(%d+):')
+---@param sidebar_bufnr integer Sidebar buffer number
+local function jump_to_task_from_sidebar(source_bufnr, sidebar_bufnr)
+  -- Get current line in sidebar
+  local cursor = vim.api.nvim_win_get_cursor(0)
+  local sidebar_line = cursor[1]
 
-  if line_num then
-    line_num = tonumber(line_num)
+  -- Get the mapping
+  local task_line_map = vim.b[sidebar_bufnr].yeahnotes_task_line_map
 
-    -- Find the window with source buffer
-    for _, win in ipairs(vim.api.nvim_list_wins()) do
-      if vim.api.nvim_win_get_buf(win) == source_bufnr then
-        vim.api.nvim_set_current_win(win)
-        vim.api.nvim_win_set_cursor(win, {line_num, 0})
-        vim.cmd('normal! zz')
-        return
-      end
-    end
-
-    vim.notify('Source buffer not visible', vim.log.levels.WARN)
+  if not task_line_map or not task_line_map[sidebar_line] then
+    return -- Not a task line
   end
+
+  local source_line = task_line_map[sidebar_line]
+
+  -- Find the window with source buffer
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    if vim.api.nvim_win_get_buf(win) == source_bufnr then
+      vim.api.nvim_set_current_win(win)
+      vim.api.nvim_win_set_cursor(win, {source_line, 0})
+      vim.cmd('normal! zz')
+      return
+    end
+  end
+
+  vim.notify('Source buffer not visible', vim.log.levels.WARN)
 end
 
 ---Create or update the sidebar for current buffer
@@ -260,7 +285,7 @@ local function create_or_update_sidebar(source_bufnr)
   -- Set up keymaps for sidebar
   local opts = { buffer = bufnr, noremap = true, silent = true }
   vim.keymap.set('n', '<CR>', function()
-    jump_to_task_from_sidebar()
+    jump_to_task_from_sidebar(source_bufnr, bufnr)
   end, opts)
   vim.keymap.set('n', 'q', function()
     M.close_sidebar()
