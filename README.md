@@ -370,9 +370,10 @@ notes/projects/website-redesign.md:42: Update mockups
 Use `:YNToggleTaskSidebar` (or `<localleader>ns`) to open a sidebar showing all tasks in the current file.
 
 **Features:**
-- Shows tasks organized into two sections:
+- Shows tasks organized into three sections:
   - **Incomplete Tasks**: All unchecked tasks (`- [ ]`)
   - **Completed Tasks**: All checked tasks (`- [x]`, `- [X]`)
+  - **Migrated Tasks**: All migrated tasks (`- [>]`, `- [<]`)
 - Updates automatically as you edit the file
 - Press Enter on any task to jump to that line in the source file
 - Press `q` to close the sidebar
@@ -385,14 +386,18 @@ Use `:YNToggleTaskSidebar` (or `<localleader>ns`) to open a sidebar showing all 
 
 ## Incomplete Tasks (3)
 
-[ ] Review pull requests                                                     L15
-[ ] Update documentation                                                     L23
-[ ] Fix bug #123                                                             L42
+☐ Review pull requests                                                       L15
+☐ Update documentation                                                       L23
+☐ Fix bug #123                                                               L42
 
 ## Completed Tasks (2)
 
-[x] Team standup                                                             L12
-[x] Code review for PR #456                                                  L18
+☑ Team standup                                                               L12
+☑ Code review for PR #456                                                    L18
+
+## Migrated Tasks (1)
+
+⇨ Follow up with design team                                                 L28
 ```
 
 Line numbers appear as subtle virtual text on the right, keeping the focus on your tasks while maintaining easy navigation.

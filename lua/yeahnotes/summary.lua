@@ -17,16 +17,17 @@ local sidebar_state = {
 ---@return table|nil Task info table or nil if not a task
 local function parse_task_line(line, line_num)
   -- Match task patterns: - [ ] or * [ ] or + [ ]
-  local list_marker, checkbox, task_text = line:match('^%s*([%-%*%+])%s*(%[[ xX>]%])%s*(.*)$')
+  local list_marker, checkbox, task_text = line:match('^%s*([%-%*%+])%s*(%[[ xX><]%])%s*(.*)$')
 
   if checkbox then
     local is_complete = checkbox:match('[xX]') ~= nil
+    local is_migrated = checkbox:match('[><]') ~= nil
     return {
       line_num = line_num,
       checkbox = checkbox,
       text = task_text or '',
       is_complete = is_complete,
-      is_migrated = checkbox:match('>') ~= nil,
+      is_migrated = is_migrated,
       full_line = line,
     }
   end
@@ -141,7 +142,8 @@ end
 ---@param bufnr integer Sidebar buffer number
 ---@param incomplete_tasks table List of incomplete tasks
 ---@param complete_tasks table List of complete tasks
-local function render_sidebar(bufnr, incomplete_tasks, complete_tasks)
+---@param migrated_tasks table List of migrated tasks
+local function render_sidebar(bufnr, incomplete_tasks, complete_tasks, migrated_tasks)
   local lines = {}
   local task_line_map = {} -- Map sidebar line number to source line number
 
@@ -156,8 +158,7 @@ local function render_sidebar(bufnr, incomplete_tasks, complete_tasks)
   if #incomplete_tasks > 0 then
     for _, task in ipairs(incomplete_tasks) do
       local line_idx = #lines + 1
-      table.insert(lines, string.format('%s %s',
-        task.checkbox,
+      table.insert(lines, string.format('☐ %s',
         task.text
       ))
       task_line_map[line_idx] = task.line_num
@@ -173,8 +174,23 @@ local function render_sidebar(bufnr, incomplete_tasks, complete_tasks)
   if #complete_tasks > 0 then
     for _, task in ipairs(complete_tasks) do
       local line_idx = #lines + 1
-      table.insert(lines, string.format('%s %s',
-        task.checkbox,
+      table.insert(lines, string.format('☑ %s',
+        task.text
+      ))
+      task_line_map[line_idx] = task.line_num
+    end
+  else
+    table.insert(lines, '(none)')
+  end
+
+  table.insert(lines, '')
+  table.insert(lines, '## Migrated Tasks (' .. #migrated_tasks .. ')')
+  table.insert(lines, '')
+
+  if #migrated_tasks > 0 then
+    for _, task in ipairs(migrated_tasks) do
+      local line_idx = #lines + 1
+      table.insert(lines, string.format('⇨ %s',
         task.text
       ))
       task_line_map[line_idx] = task.line_num
@@ -245,12 +261,13 @@ local function create_or_update_sidebar(source_bufnr)
 
   -- Get tasks from source buffer
   local all_tasks = get_buffer_tasks(source_bufnr)
-  local incomplete_tasks = vim.tbl_filter(function(t) return not t.is_complete end, all_tasks)
+  local incomplete_tasks = vim.tbl_filter(function(t) return not t.is_complete and not t.is_migrated end, all_tasks)
   local complete_tasks = vim.tbl_filter(function(t) return t.is_complete end, all_tasks)
+  local migrated_tasks = vim.tbl_filter(function(t) return t.is_migrated end, all_tasks)
 
   -- If sidebar exists and is visible, update it
   if sidebar_state.bufnr and vim.api.nvim_buf_is_valid(sidebar_state.bufnr) then
-    render_sidebar(sidebar_state.bufnr, incomplete_tasks, complete_tasks)
+    render_sidebar(sidebar_state.bufnr, incomplete_tasks, complete_tasks, migrated_tasks)
     sidebar_state.source_bufnr = source_bufnr
     return
   end
@@ -268,7 +285,7 @@ local function create_or_update_sidebar(source_bufnr)
   vim.api.nvim_buf_set_name(bufnr, 'YeahNotes: Task Summary')
 
   -- Render content
-  render_sidebar(bufnr, incomplete_tasks, complete_tasks)
+  render_sidebar(bufnr, incomplete_tasks, complete_tasks, migrated_tasks)
 
   -- Create split window
   vim.cmd('vertical rightbelow 40vsplit')
