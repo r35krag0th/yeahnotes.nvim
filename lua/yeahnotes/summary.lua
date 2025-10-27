@@ -298,6 +298,9 @@ local function create_or_update_sidebar(source_bufnr)
   vim.api.nvim_set_option_value('number', false, { win = winid })
   vim.api.nvim_set_option_value('relativenumber', false, { win = winid })
   vim.api.nvim_set_option_value('signcolumn', 'no', { win = winid })
+  vim.api.nvim_set_option_value('breakindent', true, { win = winid })
+  vim.api.nvim_set_option_value('breakindentopt', 'shift:2', { win = winid })
+  vim.api.nvim_set_option_value('linebreak', true, { win = winid })
 
   -- Set up keymaps for sidebar
   local opts = { buffer = bufnr, noremap = true, silent = true }
