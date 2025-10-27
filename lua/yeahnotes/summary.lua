@@ -55,7 +55,7 @@ end
 ---Search for incomplete tasks across all notes
 ---@return table List of results with file, line, and task info
 function M.find_global_incomplete_tasks()
-  local conf = config.get()
+  local conf = config.options
   local root = vim.fn.expand(conf.root)
   local results = {}
 
