@@ -2,9 +2,9 @@
 -- Place this in your ~/.config/nvim/lua/plugins/ directory
 
 return {
-	"your-username/yeahnotes.nvim",
+	"r35krag0th/yeahnotes.nvim",
 	dependencies = {
-		"echasnovski/mini.pick", -- Required for find/grep functionality
+		"nvim-mini/mini.pick", -- Required for find/grep functionality
 	},
 	-- Configure plugin options
 	opts = {

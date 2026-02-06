@@ -10,7 +10,7 @@ A lightweight, work-friendly Neovim journal plugin with intelligent weekday navi
 - **Date Tags & Due Dates**: Visual highlighting for dates with stoplight colors for due date status
 - **Customizable Templates**: Auto-populate new journal entries with your preferred structure
 - **Date-Based Organization**: Clean hierarchical structure (`journal/YYYY/MM/DD.md`)
-- **Fast File Finding**: Integrated with [mini.pick](https://github.com/echasnovski/mini.pick) for fuzzy finding and live grep
+- **Fast File Finding**: Integrated with [mini.pick](https://github.com/nvim-mini/mini.pick) for fuzzy finding and live grep
 - **Markdown-Based**: Simple `.md` files, no special syntax required
 - **Lazy.nvim Ready**: Built with lazy loading in mind
 
@@ -20,9 +20,9 @@ A lightweight, work-friendly Neovim journal plugin with intelligent weekday navi
 
 ```lua
 {
-  "your-username/yeahnotes.nvim",
+  "r35krag0th/yeahnotes.nvim",
   dependencies = {
-    "echasnovski/mini.pick",  -- Required for find/grep functionality
+    "nvim-mini/mini.pick",  -- Required for find/grep functionality
   },
   opts = {
     root = vim.fn.expand("~/notes"),  -- Default notes directory
@@ -475,7 +475,7 @@ While yeahnotes.nvim works great on its own, these plugins enhance the experienc
 
 - [markview.nvim](https://github.com/OXY2DEV/markview.nvim) - Beautiful Markdown rendering
 - [marksman](https://github.com/artempyanykh/marksman) - LSP for Markdown
-- [mini.pick](https://github.com/echasnovski/mini.pick) - Required for find/grep features
+- [mini.pick](https://github.com/nvim-mini/mini.pick) - Required for find/grep features
 
 ## Philosophy
 
