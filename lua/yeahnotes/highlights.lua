@@ -154,7 +154,7 @@ function M.setup_autocommands()
   local augroup = vim.api.nvim_create_augroup("YeahNotesHighlights", { clear = true })
 
   -- Highlight on buffer enter and text changes
-  vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "TextChanged", "TextChangedI" }, {
+  vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "TextChanged", "TextChangedI", "InsertLeave" }, {
     group = augroup,
     pattern = "*.md",
     callback = function(args)
