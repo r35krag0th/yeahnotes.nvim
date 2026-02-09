@@ -1,4 +1,11 @@
 local yeahnotes = require("yeahnotes")
+local highlights = require("yeahnotes.highlights")
+
+-- Initialize highlights if setup hasn't been called yet
+-- This ensures date tagging works even without explicit setup()
+if not vim.g.yeahnotes_setup_called then
+	highlights.setup()
+end
 
 -- Individual user commands for convenience
 vim.api.nvim_create_user_command("YNToday", function()
@@ -56,3 +63,10 @@ end, { desc = "YeahNotes: Show task sidebar for current file" })
 vim.api.nvim_create_user_command("YNToggleTaskSidebar", function()
 	yeahnotes.commands.toggle_task_sidebar()
 end, { desc = "YeahNotes: Toggle task sidebar for current file" })
+
+-- Debug command to refresh highlights
+vim.api.nvim_create_user_command("YNRefreshHighlights", function()
+	highlights.setup_highlight_groups()
+	highlights.highlight_buffer(vim.api.nvim_get_current_buf())
+	vim.notify("YeahNotes: Highlights refreshed", vim.log.levels.INFO)
+end, { desc = "YeahNotes: Refresh date tag highlights" })

@@ -3,6 +3,7 @@ local M = {}
 
 local config = require('yeahnotes.config')
 local bujo = require('yeahnotes.bujo')
+local highlights = require('yeahnotes.highlights')
 
 -- Internal state for sidebar
 local sidebar_state = {
@@ -215,6 +216,35 @@ local function render_sidebar(bufnr, incomplete_tasks, complete_tasks, migrated_
       virt_text = { { 'L' .. source_line, 'Comment' } },
       virt_text_pos = 'right_align',
     })
+  end
+
+  -- Highlight @date tags in sidebar task lines
+  for line_idx, line in ipairs(lines) do
+    local offset = 0
+    while true do
+      local date_start, date_end, date_str = line:find('@(%d+/%d+/%d+)', offset + 1)
+      if not date_start then
+        break
+      end
+
+      local date_timestamp = highlights.parse_date(date_str)
+      if date_timestamp then
+        local status = highlights.get_due_date_status(date_timestamp)
+        local hl_group = 'YeahNotesDueDateOverdue'
+        if status == 'today' then
+          hl_group = 'YeahNotesDueDateToday'
+        elseif status == 'upcoming' then
+          hl_group = 'YeahNotesDueDateUpcoming'
+        end
+
+        vim.api.nvim_buf_set_extmark(bufnr, ns_id, line_idx - 1, date_start - 1, {
+          end_col = date_end,
+          hl_group = hl_group,
+        })
+      end
+
+      offset = date_end
+    end
   end
 
   -- Store the mapping for jump functionality

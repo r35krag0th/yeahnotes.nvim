@@ -16,6 +16,7 @@ function M.setup(opts)
 
 	-- Set up highlights for date tags
 	highlights.setup()
+	vim.g.yeahnotes_setup_called = true
 
 	-- Set up keymaps if they're configured
 	if config.options.keymap then
@@ -35,7 +36,12 @@ function M.setup(opts)
 			keymap("n", km.previous_no_skip, commands.previous, { desc = "YeahNotes: Previous day" })
 		end
 		if km.previous_with_skip then
-			keymap("n", km.previous_with_skip, commands.previous_skip_empty, { desc = "YeahNotes: Previous (skip empty)" })
+			keymap(
+				"n",
+				km.previous_with_skip,
+				commands.previous_skip_empty,
+				{ desc = "YeahNotes: Previous (skip empty)" }
+			)
 		end
 		if km.next_no_skip then
 			keymap("n", km.next_no_skip, commands.next, { desc = "YeahNotes: Next day" })
@@ -53,13 +59,23 @@ function M.setup(opts)
 			keymap("n", km.migrate, commands.migrate_to_tomorrow, { desc = "YeahNotes: Migrate tasks to tomorrow" })
 		end
 		if km.migrate_and_open then
-			keymap("n", km.migrate_and_open, commands.migrate_and_open, { desc = "YeahNotes: Migrate and open tomorrow" })
+			keymap(
+				"n",
+				km.migrate_and_open,
+				commands.migrate_and_open,
+				{ desc = "YeahNotes: Migrate and open tomorrow" }
+			)
 		end
 		if km.global_tasks then
 			keymap("n", km.global_tasks, commands.show_global_tasks, { desc = "YeahNotes: Show all incomplete tasks" })
 		end
 		if km.toggle_task_sidebar then
-			keymap("n", km.toggle_task_sidebar, commands.toggle_task_sidebar, { desc = "YeahNotes: Toggle task sidebar" })
+			keymap(
+				"n",
+				km.toggle_task_sidebar,
+				commands.toggle_task_sidebar,
+				{ desc = "YeahNotes: Toggle task sidebar" }
+			)
 		end
 	end
 
