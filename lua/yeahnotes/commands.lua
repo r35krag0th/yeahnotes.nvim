@@ -49,6 +49,11 @@ function M.migrate_and_open()
 	bujo.migrate_to_tomorrow({ mark_migrated = true, open_tomorrow = true })
 end
 
+--- Toggle checkbox on current line between done and not done
+function M.toggle_checkbox()
+	bujo.toggle_checkbox()
+end
+
 --- Show global incomplete tasks in a picker
 function M.show_global_tasks()
 	summary.show_global_incomplete_tasks()

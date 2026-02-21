@@ -66,6 +66,35 @@ function M.mark_as_migrated(line_num)
 	end
 end
 
+--- Toggle the checkbox on the current line between done and not done
+--- Works from anywhere on the line (cursor doesn't need to be on the checkbox)
+--- [ ] → [x], [x]/[X] → [ ], [>] → [x]
+function M.toggle_checkbox()
+	local cursor = vim.api.nvim_win_get_cursor(0)
+	local line_num = cursor[1]
+	local line = vim.api.nvim_buf_get_lines(0, line_num - 1, line_num, false)[1]
+
+	if not line then
+		return
+	end
+
+	local updated
+	if line:match("%[[ ]%]") then
+		-- Incomplete → done
+		updated = line:gsub("%[[ ]%]", "[x]", 1)
+	elseif line:match("%[[xX]%]") then
+		-- Done → incomplete
+		updated = line:gsub("%[[xX]%]", "[ ]", 1)
+	elseif line:match("%[>%]") then
+		-- Migrated → done
+		updated = line:gsub("%[>%]", "[x]", 1)
+	end
+
+	if updated and updated ~= line then
+		vim.api.nvim_buf_set_lines(0, line_num - 1, line_num, false, { updated })
+	end
+end
+
 --- Append tasks to a file, creating sections if needed
 ---@param file_path string Path to the target file
 ---@param tasks table[] Array of tasks to append

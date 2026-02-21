@@ -77,6 +77,9 @@ function M.setup(opts)
 				{ desc = "YeahNotes: Toggle task sidebar" }
 			)
 		end
+		if km.toggle_checkbox then
+			keymap("n", km.toggle_checkbox, commands.toggle_checkbox, { desc = "YeahNotes: Toggle checkbox" })
+		end
 	end
 
 	-- Set up autocommands for sidebar auto-update

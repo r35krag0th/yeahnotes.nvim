@@ -64,6 +64,10 @@ vim.api.nvim_create_user_command("YNToggleTaskSidebar", function()
 	yeahnotes.commands.toggle_task_sidebar()
 end, { desc = "YeahNotes: Toggle task sidebar for current file" })
 
+vim.api.nvim_create_user_command("YNToggleCheckbox", function()
+	yeahnotes.commands.toggle_checkbox()
+end, { desc = "YeahNotes: Toggle checkbox on current line" })
+
 -- Debug command to refresh highlights
 vim.api.nvim_create_user_command("YNRefreshHighlights", function()
 	highlights.setup_highlight_groups()
