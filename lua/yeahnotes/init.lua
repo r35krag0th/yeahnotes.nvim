@@ -79,6 +79,7 @@ function M.setup(opts)
 		end
 		if km.toggle_checkbox then
 			keymap("n", km.toggle_checkbox, commands.toggle_checkbox, { desc = "YeahNotes: Toggle checkbox" })
+			keymap("v", km.toggle_checkbox, ":<C-u>'<,'>YNToggleCheckbox<CR>", { desc = "YeahNotes: Toggle checkboxes" })
 		end
 	end
 

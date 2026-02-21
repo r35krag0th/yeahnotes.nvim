@@ -203,7 +203,7 @@ The plugin provides the following user commands:
 | `:YNGlobalTasks`       | Show all incomplete tasks across all notes            |
 | `:YNTaskSidebar`       | Show task sidebar for current file                    |
 | `:YNToggleTaskSidebar` | Toggle task sidebar for current file                  |
-| `:YNToggleCheckbox`    | Toggle checkbox on current line (done/not done)       |
+| `:YNToggleCheckbox`    | Toggle checkbox (supports visual line range)          |
 
 ### Default Keymaps
 
@@ -224,7 +224,7 @@ All keymaps use `<localleader>` by default (typically `\` or `,`):
 | `<localleader>nM` | Migrate and open tomorrow |
 | `<localleader>nT` | Show all incomplete tasks |
 | `<localleader>ns` | Toggle task sidebar       |
-| `<localleader>nx` | Toggle checkbox           |
+| `<localleader>nx` | Toggle checkbox (n + v)   |
 
 ## Journal Structure
 
@@ -418,6 +418,8 @@ The sidebar automatically updates whenever you modify tasks in your note, making
 
 Use `:YNToggleCheckbox` (or `<localleader>nx`) to toggle a task's checkbox between done and not done. Your cursor can be anywhere on the line — it doesn't need to be on the checkbox itself.
 
+Works in both **normal mode** (single line) and **visual line mode** (toggle multiple tasks at once).
+
 **Toggle behavior:**
 
 | Current State | After Toggle | Description                |
@@ -426,11 +428,22 @@ Use `:YNToggleCheckbox` (or `<localleader>nx`) to toggle a task's checkbox betwe
 | `[x]` / `[X]` | `[ ]`        | Reopen task                |
 | `[>]`         | `[x]`        | Mark migrated task as done |
 
-**Example:**
+**Normal mode example:**
 
 ```markdown
 - [ ] Review pull requests ← cursor anywhere here, press <localleader>nx
 - [x] Review pull requests ← toggles to done
+```
+
+**Visual line mode example:**
+
+Select multiple lines with `V`, then press `<localleader>nx` to toggle all checkboxes in the selection. Non-task lines are skipped.
+
+```markdown
+- [ ] Review pull requests ← selected
+- [ ] Update documentation ← selected
+      Some regular text ← skipped (no checkbox)
+- [x] Already done task ← selected
 ```
 
 This is safe to use on any line — non-task lines are simply ignored.

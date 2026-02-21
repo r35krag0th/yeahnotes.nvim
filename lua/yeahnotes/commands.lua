@@ -54,6 +54,13 @@ function M.toggle_checkbox()
 	bujo.toggle_checkbox()
 end
 
+--- Toggle checkboxes on visual selection between done and not done
+function M.toggle_checkbox_visual()
+	local start_line = vim.api.nvim_buf_get_mark(0, "<")[1]
+	local end_line = vim.api.nvim_buf_get_mark(0, ">")[1]
+	bujo.toggle_checkbox({ start_line = start_line, end_line = end_line })
+end
+
 --- Show global incomplete tasks in a picker
 function M.show_global_tasks()
 	summary.show_global_incomplete_tasks()

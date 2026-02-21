@@ -66,33 +66,47 @@ function M.mark_as_migrated(line_num)
 	end
 end
 
---- Toggle the checkbox on the current line between done and not done
---- Works from anywhere on the line (cursor doesn't need to be on the checkbox)
+--- Toggle a single line's checkbox between done and not done
 --- [ ] → [x], [x]/[X] → [ ], [>] → [x]
-function M.toggle_checkbox()
-	local cursor = vim.api.nvim_win_get_cursor(0)
-	local line_num = cursor[1]
-	local line = vim.api.nvim_buf_get_lines(0, line_num - 1, line_num, false)[1]
-
-	if not line then
-		return
-	end
-
-	local updated
+---@param line string The line content
+---@return string|nil The updated line, or nil if no checkbox found
+local function toggle_line(line)
 	if line:match("%[[ ]%]") then
-		-- Incomplete → done
-		updated = line:gsub("%[[ ]%]", "[x]", 1)
+		return line:gsub("%[[ ]%]", "[x]", 1)
 	elseif line:match("%[[xX]%]") then
-		-- Done → incomplete
-		updated = line:gsub("%[[xX]%]", "[ ]", 1)
+		return line:gsub("%[[xX]%]", "[ ]", 1)
 	elseif line:match("%[>%]") then
-		-- Migrated → done
-		updated = line:gsub("%[>%]", "[x]", 1)
+		return line:gsub("%[>%]", "[x]", 1)
+	end
+	return nil
+end
+
+--- Toggle checkboxes between done and not done
+--- Works from anywhere on the line. Supports single line (normal mode)
+--- and visual line selection.
+---@param range? {start_line: number, end_line: number} Optional 1-indexed line range
+function M.toggle_checkbox(range)
+	local start_line, end_line
+
+	if range then
+		start_line = range.start_line
+		end_line = range.end_line
+	else
+		local cursor = vim.api.nvim_win_get_cursor(0)
+		start_line = cursor[1]
+		end_line = cursor[1]
 	end
 
-	if updated and updated ~= line then
-		vim.api.nvim_buf_set_lines(0, line_num - 1, line_num, false, { updated })
+	local lines = vim.api.nvim_buf_get_lines(0, start_line - 1, end_line, false)
+
+	for i, line in ipairs(lines) do
+		local updated = toggle_line(line)
+		if updated then
+			lines[i] = updated
+		end
 	end
+
+	vim.api.nvim_buf_set_lines(0, start_line - 1, end_line, false, lines)
 end
 
 --- Append tasks to a file, creating sections if needed
