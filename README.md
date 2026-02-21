@@ -5,6 +5,7 @@ A lightweight, work-friendly Neovim journal plugin with intelligent weekday navi
 ## Features
 
 - **Weekday-Aware Navigation**: Automatically skips weekends when navigating between journal entries
+- **Checkbox Toggle**: Toggle tasks between done and not done from anywhere on the line
 - **BuJo Task Migration**: Migrate incomplete tasks to tomorrow's journal (Bullet Journal style)
 - **Task Summary Views**: View incomplete tasks globally across all notes or locally in a sidebar
 - **Date Tags & Due Dates**: Visual highlighting for dates with stoplight colors for due date status
@@ -41,6 +42,7 @@ A lightweight, work-friendly Neovim journal plugin with intelligent weekday navi
     { "<localleader>nM", desc = "YeahNotes: Migrate and open tomorrow" },
     { "<localleader>nT", desc = "YeahNotes: Show all incomplete tasks" },
     { "<localleader>ns", desc = "YeahNotes: Toggle task sidebar" },
+    { "<localleader>nx", desc = "YeahNotes: Toggle checkbox" },
   },
 }
 ```
@@ -66,6 +68,7 @@ require("yeahnotes").setup({
     migrate_and_open = "<localleader>nM",
     global_tasks = "<localleader>nT",
     toggle_task_sidebar = "<localleader>ns",
+    toggle_checkbox = "<localleader>nx",
   },
 })
 ```
@@ -200,6 +203,7 @@ The plugin provides the following user commands:
 | `:YNGlobalTasks`       | Show all incomplete tasks across all notes            |
 | `:YNTaskSidebar`       | Show task sidebar for current file                    |
 | `:YNToggleTaskSidebar` | Toggle task sidebar for current file                  |
+| `:YNToggleCheckbox`    | Toggle checkbox on current line (done/not done)       |
 
 ### Default Keymaps
 
@@ -215,11 +219,12 @@ All keymaps use `<localleader>` by default (typically `\` or `,`):
 | `<localleader>nn` | Next day                  |
 | `<localleader>nN` | Next (skip empty)         |
 | `<localleader>nf` | Find files                |
-| `<localleader>ng` | Grep notes                  |
-| `<localleader>nm` | Migrate tasks to tomorrow   |
-| `<localleader>nM` | Migrate and open tomorrow   |
-| `<localleader>nT` | Show all incomplete tasks   |
-| `<localleader>ns` | Toggle task sidebar         |
+| `<localleader>ng` | Grep notes                |
+| `<localleader>nm` | Migrate tasks to tomorrow |
+| `<localleader>nM` | Migrate and open tomorrow |
+| `<localleader>nT` | Show all incomplete tasks |
+| `<localleader>ns` | Toggle task sidebar       |
+| `<localleader>nx` | Toggle checkbox           |
 
 ## Journal Structure
 
@@ -352,6 +357,7 @@ yeahnotes.nvim provides two powerful ways to view and manage your tasks: global 
 Use `:YNGlobalTasks` (or `<localleader>nT`) to search for all incomplete tasks across your entire notes directory.
 
 **Features:**
+
 - Searches all `.md` files in your notes directory
 - Shows only incomplete tasks (`- [ ]`)
 - Displays results in a picker with file paths and line numbers
@@ -371,6 +377,7 @@ notes/projects/website-redesign.md:42: Update mockups
 Use `:YNToggleTaskSidebar` (or `<localleader>ns`) to open a sidebar showing all tasks in the current file.
 
 **Features:**
+
 - Shows tasks organized into three sections:
   - **Incomplete Tasks**: All unchecked tasks (`- [ ]`)
   - **Completed Tasks**: All checked tasks (`- [x]`, `- [X]`)
@@ -387,18 +394,18 @@ Use `:YNToggleTaskSidebar` (or `<localleader>ns`) to open a sidebar showing all 
 
 ## Incomplete Tasks (3)
 
-☐ Review pull requests                                                       L15
-☐ Update documentation                                                       L23
-☐ Fix bug #123                                                               L42
+☐ Review pull requests L15
+☐ Update documentation L23
+☐ Fix bug #123 L42
 
 ## Completed Tasks (2)
 
-☑ Team standup                                                               L12
-☑ Code review for PR #456                                                    L18
+☑ Team standup L12
+☑ Code review for PR #456 L18
 
 ## Migrated Tasks (1)
 
-⇨ Follow up with design team                                                 L28
+⇨ Follow up with design team L28
 ```
 
 Line numbers appear as subtle virtual text on the right, keeping the focus on your tasks while maintaining easy navigation.
@@ -406,6 +413,27 @@ Line numbers appear as subtle virtual text on the right, keeping the focus on yo
 The sidebar automatically updates whenever you modify tasks in your note, making it easy to track your progress throughout the day.
 
 **Workflow Tip:** Keep the sidebar open while working through your daily tasks. As you check off items, the sidebar updates in real-time, moving completed tasks to the bottom section.
+
+## Checkbox Toggle
+
+Use `:YNToggleCheckbox` (or `<localleader>nx`) to toggle a task's checkbox between done and not done. Your cursor can be anywhere on the line — it doesn't need to be on the checkbox itself.
+
+**Toggle behavior:**
+
+| Current State | After Toggle | Description                |
+| ------------- | ------------ | -------------------------- |
+| `[ ]`         | `[x]`        | Mark task as done          |
+| `[x]` / `[X]` | `[ ]`        | Reopen task                |
+| `[>]`         | `[x]`        | Mark migrated task as done |
+
+**Example:**
+
+```markdown
+- [ ] Review pull requests ← cursor anywhere here, press <localleader>nx
+- [x] Review pull requests ← toggles to done
+```
+
+This is safe to use on any line — non-task lines are simply ignored.
 
 ## Date Tags & Due Dates
 
@@ -435,11 +463,11 @@ When a date tag appears at the start of a task (before the task text), it become
 
 Due dates are automatically color-coded based on their status:
 
-| Status | Color | Icon | Description |
-|--------|-------|------|-------------|
-| **Overdue** | 🔴 Red | ⚠ | Date is in the past |
-| **Today** | 🟡 Yellow | 📅 | Date is today |
-| **Upcoming** | 🟢 Green | 📌 | Date is in the future |
+| Status       | Color     | Icon | Description           |
+| ------------ | --------- | ---- | --------------------- |
+| **Overdue**  | 🔴 Red    | ⚠    | Date is in the past   |
+| **Today**    | 🟡 Yellow | 📅   | Date is today         |
+| **Upcoming** | 🟢 Green  | 📌   | Date is in the future |
 
 **Example:**
 
@@ -456,12 +484,14 @@ The highlighting updates automatically as you type and as dates change (e.g., an
 ### Regular Date Tags vs Due Dates
 
 **Due Date (on a task):**
+
 ```markdown
 - [ ] @11/10/2025 Complete project documentation
       ↑ Must be at the start of the task text
 ```
 
 **Regular Date Tag (anywhere else):**
+
 ```markdown
 The meeting on @11/10/2025 went well.
 I was born on @11/10/2025 - just a reference date.
