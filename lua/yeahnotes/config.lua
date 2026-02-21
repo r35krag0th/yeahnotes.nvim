@@ -1,9 +1,13 @@
 local M = {}
 
+---@class yeahnotes.ProgressConfig
+---@field enabled boolean Whether to show progress indicators on parent tasks
+
 ---@class yeahnotes.Config
 ---@field root string Root directory for notes
 ---@field keymap table Keymap configuration
 ---@field template? function|string|boolean Template for new journal entries (function, string, or false to disable)
+---@field progress yeahnotes.ProgressConfig Progress indicator configuration
 M.defaults = {
 	root = vim.fn.expand("~/notes"),
 	keymap = {
@@ -21,6 +25,9 @@ M.defaults = {
 		global_tasks = "<localleader>nT",
 		toggle_task_sidebar = "<localleader>ns",
 		toggle_checkbox = "<localleader>nx",
+	},
+	progress = {
+		enabled = true,
 	},
 	-- Template can be a function that receives date info, a string, or false to disable
 	template = function(date_info)

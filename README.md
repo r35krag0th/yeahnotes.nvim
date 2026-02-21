@@ -7,6 +7,7 @@ A lightweight, work-friendly Neovim journal plugin with intelligent weekday navi
 - **Weekday-Aware Navigation**: Automatically skips weekends when navigating between journal entries
 - **Checkbox Toggle**: Toggle tasks between done and not done from anywhere on the line
 - **BuJo Task Migration**: Migrate incomplete tasks to tomorrow's journal (Bullet Journal style)
+- **Task Completion Progress**: Parent tasks with nested children show completion indicators (e.g., `2/3 67%`) with stoplight colors
 - **Task Summary Views**: View incomplete tasks globally across all notes or locally in a sidebar
 - **Date Tags & Due Dates**: Visual highlighting for dates with stoplight colors for due date status
 - **Customizable Templates**: Auto-populate new journal entries with your preferred structure
@@ -69,6 +70,9 @@ require("yeahnotes").setup({
     global_tasks = "<localleader>nT",
     toggle_task_sidebar = "<localleader>ns",
     toggle_checkbox = "<localleader>nx",
+  },
+  progress = {
+    enabled = true,
   },
 })
 ```
@@ -204,6 +208,7 @@ The plugin provides the following user commands:
 | `:YNTaskSidebar`       | Show task sidebar for current file                    |
 | `:YNToggleTaskSidebar` | Toggle task sidebar for current file                  |
 | `:YNToggleCheckbox`    | Toggle checkbox (supports visual line range)          |
+| `:YNRefreshProgress`   | Refresh task progress indicators                      |
 
 ### Default Keymaps
 
@@ -447,6 +452,50 @@ Select multiple lines with `V`, then press `<localleader>nx` to toggle all check
 ```
 
 This is safe to use on any line — non-task lines are simply ignored.
+
+## Task Completion Progress
+
+Parent tasks with nested children automatically display a completion indicator at the end of the line, showing how many subtasks are done.
+
+**Example:**
+
+```markdown
+- [ ] Project setup 2/3 67%
+  - [x] Initialize repository
+  - [x] Configure CI pipeline
+  - [ ] Write initial tests
+- [ ] Documentation 0/2 0%
+  - [ ] API reference
+  - [ ] Getting started guide
+```
+
+The indicator counts all descendants recursively, so deeply nested subtasks are included in the parent's count.
+
+### Progress Colors (Stoplight System)
+
+| Progress  | Color     | Description           |
+| --------- | --------- | --------------------- |
+| **0%**    | 🔴 Red    | No subtasks completed |
+| **1-99%** | 🟡 Yellow | Partially complete    |
+| **100%**  | 🟢 Green  | All subtasks done     |
+
+### Counting Rules
+
+These checkbox states count as **completed**: `[x]`, `[X]`, `[>]`, `[<]`
+
+Only `[ ]` counts as **incomplete**.
+
+Tasks without children (leaf tasks) show no indicator. The progress updates automatically when you toggle checkboxes or save the file.
+
+### Disabling Progress Indicators
+
+```lua
+require("yeahnotes").setup({
+  progress = {
+    enabled = false,
+  },
+})
+```
 
 ## Date Tags & Due Dates
 

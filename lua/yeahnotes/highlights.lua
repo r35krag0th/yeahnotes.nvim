@@ -194,6 +194,9 @@ function M.highlight_buffer(bufnr)
 			end
 		end
 	end
+
+	-- Apply progress indicators (piggybacks on same triggers)
+	require("yeahnotes.progress").highlight_buffer(bufnr)
 end
 
 ---Set up autocommands for automatic highlighting
@@ -205,18 +208,19 @@ function M.setup_autocommands()
 		group = augroup,
 		callback = function()
 			M.setup_highlight_groups()
+			require("yeahnotes.progress").setup_highlight_groups()
 		end,
 		desc = "Re-apply YeahNotes highlight groups after colorscheme change",
 	})
 
-	-- Apply highlights when buffer is first displayed or saved
-	vim.api.nvim_create_autocmd({ "BufReadPost", "BufWritePost" }, {
+	-- Apply highlights when buffer is first displayed, saved, or modified in normal mode
+	vim.api.nvim_create_autocmd({ "BufReadPost", "BufWritePost", "TextChanged" }, {
 		group = augroup,
 		pattern = "*.md",
 		callback = function(args)
 			M.highlight_buffer(args.buf)
 		end,
-		desc = "Highlight YeahNotes date tags on buffer read/write",
+		desc = "Highlight YeahNotes date tags on buffer read/write/change",
 	})
 
 	-- Update highlights when leaving insert mode
@@ -243,6 +247,7 @@ end
 ---Initialize the highlights module
 function M.setup()
 	M.setup_highlight_groups()
+	require("yeahnotes.progress").setup_highlight_groups()
 	M.setup_autocommands()
 
 	-- Immediately highlight any already-open markdown buffers
